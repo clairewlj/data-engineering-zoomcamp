@@ -27,6 +27,10 @@ What's the version of `pip` in the image?
 - 23.3.1
 - 23.2.1
 
+```bash
+docker run -it --entrypoint=bash python:3.12.8
+pip --version
+```
 
 ## Question 2. Understanding Docker networking and docker-compose
 
@@ -72,6 +76,12 @@ volumes:
 
 If there are more than one answers, select only one of them
 
+db:5432
+When using Docker Compose, services can communicate with each other using their service name as the hostname within the same network. In this case:
+
+hostname: db (the service name, not the container name 'postgres' --??? container name can be used, accrording to solution)
+port: 5432 (the internal port in the container, not the mapped port 5433)
+
 ##  Prepare Postgres
 
 Run Postgres and load data as shown in the videos
@@ -91,6 +101,22 @@ Download this data and put it into Postgres.
 
 You can use the code from the course. It's up to you whether
 you want to use Jupyter or a python script.
+
+```bash
+docker network create pg-network
+
+docker run -it \
+  -e POSTGRES_USER="root" \
+  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_DB="green_taxi" \
+  -v "$(pwd)/green_taxi_postgres_data:/var/lib/postgresql/data" \
+  -p 5432:5432 \
+  --network=pg-network \
+  --name pg-database \
+  postgres:13 
+
+docker run -it -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" -e PGADMIN_DEFAULT_PASSWORD="root" -p 8080:80 --network=pg-network --name pgadmin dpage/pgadmin4
+```
 
 ## Question 3. Trip Segmentation Count
 
@@ -169,6 +195,8 @@ Which of the following sequences, **respectively**, describes the workflow for:
 1. Downloading the provider plugins and setting up backend,
 2. Generating proposed changes and auto-executing the plan
 3. Remove all resources managed by terraform`
+
+terraform init, terraform apply -auto-approve, terraform destroy
 
 Answers:
 - terraform import, terraform apply -y, terraform destroy
