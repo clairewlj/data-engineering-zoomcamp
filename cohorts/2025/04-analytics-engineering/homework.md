@@ -50,6 +50,8 @@ from {{ source('raw_nyc_tripdata', 'ext_green_taxi' ) }}
 - `select * from myproject.my_nyc_tripdata.ext_green_taxi`
 - `select * from dtc_zoomcamp_2025.raw_nyc_tripdata.green_taxi`
 
+Since DBT_BIGQUERY_SOURCE_DATASET is not found, it will use the default value. so answer is `select * from myproject.raw_nyc_tripdata.ext_green_taxi`
+
 
 ### Question 2: dbt Variables & Dynamic Models
 
@@ -73,6 +75,7 @@ What would you change to accomplish that in a such way that command line argumen
 - Update the WHERE clause to `pickup_datetime >= CURRENT_DATE - INTERVAL '{{ env_var("DAYS_BACK", var("days_back", "30")) }}' DAY`
 
 
+
 ### Question 3: dbt Data Lineage and Execution
 
 Considering the data lineage below **and** that taxi_zone_lookup is the **only** materialization build (from a .csv seed file):
@@ -81,12 +84,13 @@ Considering the data lineage below **and** that taxi_zone_lookup is the **only**
 
 Select the option that does **NOT** apply for materializing `fct_taxi_monthly_zone_revenue`:
 
-- `dbt run`
-- `dbt run --select +models/core/dim_taxi_trips.sql+ --target prod`
-- `dbt run --select +models/core/fct_taxi_monthly_zone_revenue.sql`
-- `dbt run --select +models/core/`
-- `dbt run --select models/staging/+`
+- `dbt run` Runs all models in the project.
+- `dbt run --select +models/core/dim_taxi_trips.sql+ --target prod` Runs dim_taxi_trips.sql along with its upstream dependencies and downstream dependents.
+- `dbt run --select +models/core/fct_taxi_monthly_zone_revenue.sql` Runs fct_taxi_monthly_zone_revenue.sql along with all its upstream dependencies
+- `dbt run --select +models/core/` Runs all models in the core directory along with their upstream dependencies
+- `dbt run --select models/staging/+` Runs all models in the staging directory along with their downstream dependents.
 
+Answer is `dbt run --select models/staging/+`.
 
 ### Question 4: dbt Macros and Jinja
 
@@ -125,7 +129,7 @@ That all being said, regarding macro above, **select all statements that are tru
 - When using `stg`, it materializes in the dataset defined in `DBT_BIGQUERY_STAGING_DATASET`, or defaults to `DBT_BIGQUERY_TARGET_DATASET`
 - When using `staging`, it materializes in the dataset defined in `DBT_BIGQUERY_STAGING_DATASET`, or defaults to `DBT_BIGQUERY_TARGET_DATASET`
 
-
+Answer: 1,3,4,5
 ## Serious SQL
 
 Alright, in module 1, you had a SQL refresher, so now let's build on top of that with some serious SQL.
@@ -152,7 +156,7 @@ Considering the YoY Growth in 2020, which were the yearly quarters with the best
 - green: {best: 2020/Q1, worst: 2020/Q2}, yellow: {best: 2020/Q1, worst: 2020/Q2}
 - green: {best: 2020/Q1, worst: 2020/Q2}, yellow: {best: 2020/Q3, worst: 2020/Q4}
 
-
+answer: green: {best: 2020/Q1, worst: 2020/Q2}, yellow: {best: 2020/Q1, worst: 2020/Q2}
 ### Question 6: P97/P95/P90 Taxi Monthly Fare
 
 1. Create a new model `fct_taxi_trips_monthly_fare_p95.sql`
@@ -167,7 +171,7 @@ Now, what are the values of `p97`, `p95`, `p90` for Green Taxi and Yellow Taxi, 
 - green: {p97: 40.0, p95: 33.0, p90: 24.5}, yellow: {p97: 31.5, p95: 25.5, p90: 19.0}
 - green: {p97: 55.0, p95: 45.0, p90: 26.5}, yellow: {p97: 52.0, p95: 25.5, p90: 19.0}
 
-
+answer: green: {p97: 55.0, p95: 45.0, p90: 26.5}, yellow: {p97: 31.5, p95: 25.5, p90: 19.0}
 ### Question 7: Top #Nth longest P90 travel time Location for FHV
 
 Prerequisites:
@@ -188,7 +192,7 @@ For the Trips that **respectively** started from `Newark Airport`, `SoHo`, and `
 - LaGuardia Airport, Rosedale, Bath Beach
 - LaGuardia Airport, Yorkville East, Greenpoint
 
-
+answer: LaGuardia Airport, Chinatown, Garment District
 ## Submitting the solutions
 
 * Form for submitting: https://courses.datatalks.club/de-zoomcamp-2025/homework/hw4
