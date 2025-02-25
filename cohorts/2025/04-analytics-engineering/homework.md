@@ -193,6 +193,22 @@ For the Trips that **respectively** started from `Newark Airport`, `SoHo`, and `
 - LaGuardia Airport, Yorkville East, Greenpoint
 
 answer: LaGuardia Airport, Chinatown, Garment District
+```sql
+with temp1 as (SELECT 
+pickup_zone,
+dropoff_zone,
+p90_trip_duration,
+row_number() over (partition by pickup_zone order by p90_trip_duration desc) as rn
+FROM `dtc-de-course-449416.dbt_clairewlj.fct_fhv_monthly_zone_traveltime_p90` 
+where pickup_zone in ('Newark Airport', 'SoHo','Yorkville East')
+and pickup_year = 2019
+and pickup_month = 11)
+select *
+from temp1
+where rn = 2
+```
+
+
 ## Submitting the solutions
 
 * Form for submitting: https://courses.datatalks.club/de-zoomcamp-2025/homework/hw4
